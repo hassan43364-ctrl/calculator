@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Student Management System</title>
+<style>
+:root {
+  --card: #ffffff; --text: #333333; --muted: #777777; --border: #dddddd;
+  --panel: #f7f7ff; --accent: #667eea; --accent2: #764ba2; --err: #d63031;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --card: #23223a; --text: #ecebff; --muted: #a9a7c9; --border: #45436b;
+    --panel: #2c2b4a; --accent: #8ea0ff; --err: #ff7675;
+  }
+}
+:root[data-theme="dark"] {
+  --card: #23223a; --text: #ecebff; --muted: #a9a7c9; --border: #45436b;
+  --panel: #2c2b4a; --accent: #8ea0ff; --err: #ff7675;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  min-height: 100vh; display: flex; justify-content: center; align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2); padding: 20px;
+}
+.container {
+  width: 100%; max-width: 500px; background: var(--card); color: var(--text);
+  padding: 35px; border-radius: 18px; box-shadow: 0 15px 40px rgba(0,0,0,.25);
+}
+h1 { text-align: center; font-size: 26px; margin-bottom: 8px; }
+.subtitle { text-align: center; color: var(--muted); margin-bottom: 30px; }
+.input-group { margin-bottom: 18px; }
+label { display: block; margin-bottom: 7px; font-weight: bold; }
+input {
+  width: 100%; padding: 13px; border: 2px solid var(--border); border-radius: 8px;
+  font-size: 16px; outline: none; transition: .3s; background: var(--card); color: var(--text);
+}
+input:focus { border-color: var(--accent); }
+button {
+  width: 100%; padding: 14px; border: none; border-radius: 8px;
+  background: linear-gradient(135deg, #667eea, #764ba2); color: #fff;
+  font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: .3s;
+}
+button:hover { transform: translateY(-2px); box-shadow: 0 7px 15px rgba(102,126,234,.4); }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.result {
+  display: none; margin-top: 30px; padding: 22px; background: var(--panel);
+  border-radius: 12px; border-left: 5px solid var(--accent);
+}
+.result h2 { margin-bottom: 15px; }
+.result p { margin: 10px 0; font-size: 16px; }
+.percentage { font-size: 24px !important; font-weight: bold; color: var(--accent); }
+.error { color: var(--err); text-align: center; margin-top: 15px; display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎓 Student Management System</h1>
+  <p class="subtitle">Enter student information and marks</p>
+
+  <div class="input-group">
+    <label for="name">Student Name</label>
+    <input type="text" id="name" placeholder="Enter student name">
+  </div>
+  <div class="input-group">
+    <label for="rollNo">Roll Number</label>
+    <input type="number" id="rollNo" placeholder="Enter roll number">
+  </div>
+  <div class="input-group">
+    <label for="computer">Computer Marks</label>
+    <input type="number" id="computer" min="0" max="100" placeholder="Enter marks out of 100">
+  </div>
+  <div class="input-group">
+    <label for="math">Math Marks</label>
+    <input type="number" id="math" min="0" max="100" placeholder="Enter marks out of 100">
+  </div>
+  <div class="input-group">
+    <label for="english">English Marks</label>
+    <input type="number" id="english" min="0" max="100" placeholder="Enter marks out of 100">
+  </div>
+
+  <button onclick="calculateResult()">Calculate Result</button>
+  <p class="error" id="error" role="alert"></p>
+
+  <div class="result" id="result">
+    <h2>📋 Student Information</h2>
+    <p><strong>Name:</strong> <span id="resultName"></span></p>
+    <p><strong>Roll Number:</strong> <span id="resultRoll"></span></p>
+    <p><strong>Total Marks:</strong> <span id="resultTotal"></span> / 300</p>
+    <p class="percentage">Percentage: <span id="resultPercentage"></span>%</p>
+  </div>
+</div>
+
+<script>
+function calculateResult() {
+  const name = document.getElementById("name").value.trim();
+  const rollNo = document.getElementById("rollNo").value;
+  const raw = ["computer", "math", "english"].map(id => document.getElementById(id).value);
+  const [computer, math, english] = raw.map(Number);
+  const error = document.getElementById("error");
+  const result = document.getElementById("result");
+
+  error.style.display = "none";
+  result.style.display = "none";
+
+  if (name === "" || rollNo === "" || raw.includes("")) {
+    error.textContent = "Please fill in all fields.";
+    error.style.display = "block";
+    return;
+  }
+  if ([computer, math, english].some(m => m < 0 || m > 100)) {
+    error.textContent = "Marks must be between 0 and 100.";
+    error.style.display = "block";
+    return;
+  }
+
+  const total = computer + math + english;
+  const percentage = (total / 300) * 100;
+
+  document.getElementById("resultName").textContent = name;
+  document.getElementById("resultRoll").textContent = rollNo;
+  document.getElementById("resultTotal").textContent = total;
+  document.getElementById("resultPercentage").textContent = percentage.toFixed(2);
+  result.style.display = "block";
+}
+</script>
+</body>
+</html>
